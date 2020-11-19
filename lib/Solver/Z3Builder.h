@@ -99,11 +99,19 @@ public:
   Z3ArrayExprHash(){};
   virtual ~Z3ArrayExprHash();
   void clear();
+  void clearUpdates();
 };
 
 class Z3Builder {
+  friend class Z3Solver;
+  friend class Z3SolverImpl;
   ExprHashMap<std::pair<Z3ASTHandle, unsigned> > constructed;
   Z3ArrayExprHash _arr_hash;
+  ExprHashMap<Z3ASTHandle> replaceWithExpr;
+  // These are additional constraints that are generated during the
+  // translation to Z3's constraint language. Clients should assert
+  // these.
+  std::vector<Z3ASTHandle> sideConstraints;
 
 private:
   Z3ASTHandle bvOne(unsigned width);
@@ -166,6 +174,20 @@ private:
 
   Z3SortHandle getBvSort(unsigned width);
   Z3SortHandle getArraySort(Z3SortHandle domainSort, Z3SortHandle rangeSort);
+  Z3SortHandle getFloatSortFromBitWidth(unsigned bitWidth);
+
+  // Float casts
+  Z3ASTHandle castToFloat(const Z3ASTHandle &e);
+  Z3ASTHandle castToBitVector(const Z3ASTHandle &e);
+
+  Z3ASTHandle getRoundingModeSort(llvm::APFloat::roundingMode rm);
+  Z3ASTHandle getx87FP80ExplicitSignificandIntegerBit(const Z3ASTHandle &e);
+
+  //Replacements and tooling for floats
+  Z3ASTHandle getFreshBitVectorVariable(unsigned bitWidth,
+                                                   const char *prefix);
+  bool addReplacementExpr(const ref<Expr> &e, const Z3ASTHandle &replacement);
+
   bool autoClearConstructCache;
   std::string z3LogInteractionFile;
 
@@ -188,6 +210,9 @@ public:
   }
 
   void clearConstructCache() { constructed.clear(); }
+  void clearSideConstraints() { sideConstraints.clear(); }
+  void clearReplacements();
+
 };
 }
 

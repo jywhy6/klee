@@ -66,6 +66,9 @@ bool IntrinsicCleanerPass::runOnBasicBlock(BasicBlock &b, Module &M) {
       case Intrinsic::vastart:
       case Intrinsic::vaend:
       case Intrinsic::fabs:
+      case Intrinsic::sqrt:
+      case Intrinsic::maxnum:
+      case Intrinsic::minnum:
 #if LLVM_VERSION_CODE >= LLVM_VERSION(7, 0)
       case Intrinsic::fshr:
       case Intrinsic::fshl:
@@ -390,7 +393,6 @@ bool IntrinsicCleanerPass::runOnBasicBlock(BasicBlock &b, Module &M) {
       case Intrinsic::returnaddress:
       case Intrinsic::round:
       case Intrinsic::sin:
-      case Intrinsic::sqrt:
       case Intrinsic::stackrestore:
       case Intrinsic::stacksave:
       case Intrinsic::trunc:

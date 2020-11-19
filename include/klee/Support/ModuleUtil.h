@@ -39,6 +39,37 @@ std::unique_ptr<llvm::Module>
 linkModules(std::vector<std::unique_ptr<llvm::Module>> &modules,
             llvm::StringRef entryFunction, std::string &errorMsg);
 
+/// Map for replacing std float computations to klee internals (avoid setting concretes during calls below)
+const std::vector <std::pair<std::string, std::string>> floatReplacements = {
+    {"__isnanf", "klee_internal_isnanf"},
+    {"__isnan", "klee_internal_isnan"},
+    {"__isinff", "klee_internal_isinff"},
+    {"__isinf", "klee_internal_isinf"},
+    {"__fpclassifyf",
+                 "klee_internal_fpclassifyf"},
+    {"__fpclassify",
+                 "klee_internal_fpclassify"},
+    {"__finitef", "klee_internal_finitef"},
+    {"__finite", "klee_internal_finite"},
+    {"sqrt", "klee_internal_sqrt"},
+    {"sqrtf", "klee_internal_sqrtf"},
+    {"fabs", "klee_internal_fabs"},
+    {"fabsf", "klee_internal_fabsf"}
+#if defined(__x86_64__) || defined(__i386__)
+    , {"__isnanl", "klee_internal_isnanl"},
+    {"__isinfl", "klee_internal_isinfl"},
+    {"__fpclassifyl","klee_internal_fpclassifyl"},
+    {"__finitel", "klee_internal_finitel"},
+    {"sqrtl", "klee_internal_sqrtl"},
+    {"fabsl", "klee_internal_fabsl"}
+#endif
+};
+
+const std::vector <std::pair<std::string, std::string>> feRoundReplacements {
+    {"fegetround", "klee_internal_fegetround"},
+    {"fesetround", "klee_internal_fesetround"}
+};
+
 /// Return the Function* target of a Call or Invoke instruction, or
 /// null if it cannot be determined (should be only for indirect
 /// calls, although complicated constant expressions might be

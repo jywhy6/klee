@@ -223,6 +223,9 @@ public:
   /// @brief Keep track of unwinding state while unwinding, otherwise empty
   std::unique_ptr<UnwindingInformation> unwindingInformation;
 
+  ///@brief State cfenv rounding mode
+  llvm::APFloat::roundingMode roundingMode;
+
   /// @brief the global state counter
   static std::uint32_t nextID;
 

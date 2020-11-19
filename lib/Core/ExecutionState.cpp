@@ -77,6 +77,7 @@ ExecutionState::ExecutionState(KFunction *kf) :
     ptreeNode(nullptr),
     steppedInstructions(0),
     instsSinceCovNew(0),
+    roundingMode(llvm::APFloat::rmNearestTiesToEven),
     coveredNew(false),
     forkDisabled(false) {
   pushFrame(nullptr, kf);
@@ -107,9 +108,7 @@ ExecutionState::ExecutionState(const ExecutionState& state):
     openMergeStack(state.openMergeStack),
     steppedInstructions(state.steppedInstructions),
     instsSinceCovNew(state.instsSinceCovNew),
-    unwindingInformation(state.unwindingInformation
-                             ? state.unwindingInformation->clone()
-                             : nullptr),
+    roundingMode(state.roundingMode),
     coveredNew(state.coveredNew),
     forkDisabled(state.forkDisabled) {
   for (const auto &cur_mergehandler: openMergeStack)

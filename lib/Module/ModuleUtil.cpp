@@ -232,6 +232,18 @@ klee::linkModules(std::vector<std::unique_ptr<llvm::Module>> &modules,
     symbolsLinked = false;
     std::set<std::string> undefinedSymbols;
     GetAllUndefinedSymbols(composite.get(), undefinedSymbols);
+    //replace std functions with KLEE internals
+    for (const auto& p : floatReplacements) {
+        if (composite->getFunction(p.first)) {
+            undefinedSymbols.insert(p.second);
+        }
+    }
+    for (const auto& p : feRoundReplacements) {
+        if (composite->getFunction(p.first)) {
+            undefinedSymbols.insert(p.second);
+        }
+    }
+
     auto hasRequiredDefinition = [&undefinedSymbols](
                                      const llvm::Module *module) {
       for (auto symbol : undefinedSymbols) {
@@ -246,7 +258,6 @@ klee::linkModules(std::vector<std::unique_ptr<llvm::Module>> &modules,
       }
       return false;
     };
-
     // Stop in nothing is undefined
     if (undefinedSymbols.empty())
       break;

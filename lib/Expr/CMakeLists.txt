@@ -13,6 +13,7 @@ klee_add_component(kleaverExpr
   ArrayExprVisitor.cpp
   Assignment.cpp
   AssignmentGenerator.cpp
+  APFloatEval.cpp
   Constraints.cpp
   ExprBuilder.cpp
   Expr.cpp
